@@ -1,0 +1,27 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+}
+
+.select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.select:focus {
+    border-color: #2563eb;
+}
+
+.errorText {
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 4px;
+    position: absolute;
+    bottom: -20px;
+}

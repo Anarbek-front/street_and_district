@@ -1,0 +1,26 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.input {
+    font-size: 16px;
+    outline: none !important;
+}
+
+.input:focus {
+    border-color: #2563eb;
+}
+
+.errorText {
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 4px;
+    position: absolute;
+    bottom: -20px;
+}
