@@ -15,8 +15,6 @@ export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ({ options, placeholder, error, className, ...props }, ref) => {
-        console.log(options)
-
         return (
             <div className={clsx(styles.wrapper)}>
                 <select

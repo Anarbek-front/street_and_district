@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
-import type { SearchResult } from '../../types/search'
 import { api } from '../../api/axios'
+import type { SearchAndMatchesResult } from '../../types/search'
 import type { District } from '../../types/district'
-import type { SearchFormValue } from '../../pages/Home'
 import type { DistrictAndStreets } from '../../types/district_and_streets'
+import type { SearchFormValue } from '../../types/searchForm'
 
 type SearchState = {
-    searchData: SearchResult[]
+    searchData: SearchAndMatchesResult[]
     districts: District[]
-    districtsAndStreets: DistrictAndStreets[]
+    districtsAndStreets: SearchAndMatchesResult[]
     loading: boolean
     error: string | null
 }
@@ -22,13 +22,13 @@ const initialState: SearchState = {
 }
 
 // поиск
-export const axiosSearch = createAsyncThunk<
-    SearchResult[],
+export const streetSearch = createAsyncThunk<
+    SearchAndMatchesResult[],
     SearchFormValue,
     { rejectValue: string }
->('get/axiosSearch', async (data, { rejectWithValue }) => {
+>('get/streetSearch', async (data, { rejectWithValue }) => {
     try {
-        const response = await api.get<SearchResult[]>('/search', {
+        const response = await api.get<SearchAndMatchesResult[]>('/search', {
             params: data,
         })
         const found = response.data.find(
@@ -57,15 +57,21 @@ export const getDistricts = createAsyncThunk<
 
 // все улицы и районы
 export const getDistrictsAndStreets = createAsyncThunk<
-    DistrictAndStreets[],
+    SearchAndMatchesResult[],
     void,
     { rejectValue: string }
 >('get/districts_streets', async (_, { rejectWithValue }) => {
     try {
         const { data } = await api.get<DistrictAndStreets[]>('/matches')
-        return data
+
+        const changedData = data.map(({ id, streetName, districtName }) => ({
+            id,
+            street: streetName,
+            district: districtName,
+        }))
+        return changedData
     } catch {
-        return rejectWithValue('Ошибка загрузки районов')
+        return rejectWithValue('Ошибка загрузки районов и улиц')
     }
 })
 
@@ -79,7 +85,7 @@ const searchSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(axiosSearch.fulfilled, (state, action) => {
+            .addCase(streetSearch.fulfilled, (state, action) => {
                 state.loading = false
                 state.searchData = action.payload
             })
@@ -87,13 +93,13 @@ const searchSlice = createSlice({
                 state.loading = false
                 state.districts = action.payload
             })
-            .addCase(getDistrictsAndStreets.fulfilled,(state, action) => {
-                state.loading=false
+            .addCase(getDistrictsAndStreets.fulfilled, (state, action) => {
+                state.loading = false
                 state.districtsAndStreets = action.payload
             })
             .addMatcher(
                 isAnyOf(
-                    axiosSearch.pending,
+                    streetSearch.pending,
                     getDistricts.pending,
                     getDistrictsAndStreets.pending,
                 ),
@@ -104,7 +110,7 @@ const searchSlice = createSlice({
             )
             .addMatcher(
                 isAnyOf(
-                    axiosSearch.rejected,
+                    streetSearch.rejected,
                     getDistricts.rejected,
                     getDistrictsAndStreets.rejected,
                 ),

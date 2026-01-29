@@ -17,12 +17,12 @@ td {
 }
 
 th {
-    background-color: #f5f5f5;
+    background-color: #eaeaeb;
     font-weight: 600;
 }
 
 tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: #d6d6d6;
 }
 
 @media (max-width: 600px) {

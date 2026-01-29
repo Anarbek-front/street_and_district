@@ -1,28 +1,22 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import {
-    axiosSearch,
+    streetSearch,
     getDistricts,
     getDistrictsAndStreets,
-} from '../store/search/search.slice'
-import { Input } from '../components/UI/input'
-import { Button } from '../components/UI/button'
-import { Select } from '../components/UI/select/Select'
+} from '../../store/search/search.slice'
+import { Input } from '../../components/UI/input'
+import { Button } from '../../components/UI/button'
+import { Select } from '../../components/UI/select'
+import { Table } from '../../components/UI/table'
+import type { SearchFormValue } from '../../types/searchForm'
 import styles from './home.module.css'
-import { Table } from '../components/UI/table'
-
-export type SearchFormValue = {
-    name: string
-    district: string
-}
-
 
 export const Home = () => {
     const dispatch = useAppDispatch()
-    const { searchData, districts, districtsAndStreets, loading, error } = useAppSelector(
-        (state) => state.search,
-    )
+    const { searchData, districts, districtsAndStreets, loading, error } =
+        useAppSelector((state) => state.search)
 
     const {
         register,
@@ -36,10 +30,9 @@ export const Home = () => {
     })
 
     const onSubmit = (data: SearchFormValue) => {
-        const { name, district } = data
+        const { name } = data
         if (!name.trim()) return
-        dispatch(axiosSearch(data))
-        console.log(district)
+        dispatch(streetSearch(data))
     }
 
     useEffect(() => {
@@ -56,7 +49,7 @@ export const Home = () => {
                         fullWidth
                         error={errors.name?.message}
                         {...register('name', {
-                            required: 'Введите улицу или район',
+                            required: 'Введите название улицы',
                             minLength: {
                                 value: 2,
                                 message: 'Минимум 2 символа',
@@ -64,11 +57,11 @@ export const Home = () => {
                         })}
                     />
                     <Select
-                        placeholder="Выберите"
+                        placeholder="Выберите район"
                         options={districts}
                         error={errors.district?.message}
                         {...register('district', {
-                            required: 'Выберите',
+                            required: 'Не выбрали район',
                             minLength: {
                                 value: 2,
                                 message: 'Вы не выбрали',
@@ -87,7 +80,13 @@ export const Home = () => {
                 </form>
             </div>
             <div className="list_of_streets">
-                <Table data={!error ? {searchData.length === 0 ? districtsAndStreets: searchData} : []} />
+                <Table
+                    data={
+                        searchData.length === 0
+                            ? districtsAndStreets
+                            : searchData
+                    }
+                />
             </div>
         </div>
     )

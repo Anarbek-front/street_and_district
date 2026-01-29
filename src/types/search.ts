@@ -1,4 +1,4 @@
-export type SearchResult = {
+export type SearchAndMatchesResult = {
     id: string
     street: string
     district: string
